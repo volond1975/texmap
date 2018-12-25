@@ -1,78 +1,7 @@
 Attribute VB_Name = "Module2"
-Sub ПоВыделению()
-Attribute ПоВыделению.VB_ProcData.VB_Invoke_Func = " \n14"
-'
-' ПоВыделению2 Макрос
-'
-
-'
-   Dim r As Range
-   v = Selection
-   col = UBound(v)
- For Each r In Selection.Rows
-    With r
-        .HorizontalAlignment = xlCenterAcrossSelection
-        .VerticalAlignment = xlCenter
-        .WrapText = True
-        .Orientation = 0
-        .AddIndent = False
-        .IndentLevel = 0
-        .ShrinkToFit = True
-        .ReadingOrder = xlContext
-        .MergeCells = False
-    End With
-    Next
-End Sub
-
-Function ПоИмениJSON(ndrName)
-'
-' ПоВыделению2 Макрос
-'
-Dim rng As Range, items As New Collection, myitem As New Dictionary, i As Integer, cell As Variant
 
 
 
-'
-   Dim r As Range
-   Dim firstRange As Range
-   Dim rRange As Range
-   Dim rDataRange As Range
-   Arr = ThisWorkbook.Names(ndrName).RefersToRange
-   param = "offset"
-'   rowCol = UBound(v)
-   Dim rHeader As Range
- Set rHeader = ThisWorkbook.Names(ndrName).RefersToRange.Rows(1)
- Set rRange = ThisWorkbook.Names(ndrName).RefersToRange
- Set firstRange = rRange.Cells(1, 1)
-' set rDataRange=range(cells(
-For i = LBound(Arr, 1) To UBound(Arr, 1)
-  For j = LBound(Arr, 2) To UBound(Arr, 2)
-'  Debug.Print firstRange.Offset(0, j - 1)
-'  myitem(firstRange.Offset(i - 1, j - 1).r) = firstRange.Offset(i - 1, j - 1).value
-If firstRange.Offset(i - 1, j - 1).value <> "" Then
-myitem(i - 1 & "_" & j - 1) = firstRange.Offset(i - 1, j - 1).value
-If param = "offset" Then myitem(i - 1 & "_" & j - 1) = firstRange.Offset(i - 1, j - 1).value
-If param = "address" Then myitem(firstRange.Offset(i - 1, j - 1).Address) = firstRange.Offset(i - 1, j - 1).value
-If param = "NameColumn" Then myitem(firstRange.Offset(0, j - 1).Address) = firstRange.Offset(i - 1, j - 1).value
-
-
-
-Else
-
-End If
-  Next j
-  items.Add myitem
-Set myitem = Nothing
-
-Next i
-Dim strJson As String
-
-strJson = URLDecode(RussianStringToURLEncode_New(ConvertToJson(items, Whitespace:=2)))
-Debug.Print strJson
-'json = ParseJson(ConvertToJson(items))
-ПоИмениJSON = strJson
-
-End Function
 
 Public Sub exceljson()
 Dim http As Object, JSON As Object, i As Integer
@@ -212,3 +141,53 @@ Public Function ToJSON(rng As Range) As String
     
     ToJSON = JSON
 End Function
+Option Explicit
+Public Sub GetInfoFromSheet()
+    Dim jsonStr As String
+    jsonStr = [A1]                               '<== read in from sheet
+    Dim json As Object
+    Set json = JsonConverter.ParseJson(jsonStr)
+
+    Dim i As Long, j As Long, key As Variant
+    For i = 1 To json.Count
+        For Each key In json(i).Keys
+            Select Case key
+            Case "name", "type"
+                Debug.Print key & " " & json(i)(key)
+            Case Else
+                Select Case TypeName(json(i)(key))
+                Case "Dictionary"
+                    Dim key2 As Variant
+                    For Each key2 In json(i)(key)
+                        Select Case TypeName(json(i)(key)(key2))
+                        Case "Collection"
+                            Dim k As Long
+                            For k = 1 To json(i)(key)(key2).Count
+                                Debug.Print key & " " & key2 & " " & json(i)(key)(key2)(k)
+                            Next k
+                        Case Else
+                            Debug.Print key & " " & key2 & " " & json(i)(key)(key2)
+                        End Select
+                    Next key2
+                Case "Collection"
+                    For j = 1 To json(i)(key).Count '<== "actions"
+                        Dim key3 As Variant
+                        For Each key3 In json(i)(key)(j).Keys
+                            Select Case TypeName(json(i)(key)(j)(key3))
+                            Case "String", "Boolean", "Double"
+                                Debug.Print key & " " & key3 & " " & json(i)(key)(j)(key3)
+                            Case Else
+                                Dim key4 As Variant
+                                For Each key4 In json(i)(key)(j)(key3).Keys
+                                    Debug.Print key & " " & key3 & " " & key4 & " " & json(i)(key)(j)(key3)(key4)
+                                Next key4
+                            End Select
+                        Next key3
+                    Next j
+                Case Else
+                    Debug.Print key & " " & json(i)(key)
+                End Select
+            End Select
+        Next key
+    Next i
+End Sub

@@ -70,3 +70,14 @@ End Sub
 Function bRowHide(r As Range)
 bRowHide = r.EntireRow.Hidden
 End Function
+Sub reestrshow()
+'
+' AddDataValBethen Макрос
+'
+
+'Шаблон [Наименование]
+'Set r = Range("Шаблон[Наименование]").Find(ActiveSheet.name)
+'If Not r Is Nothing Then
+РеестрЛКЕОД.Show 0
+'End If
+End Sub

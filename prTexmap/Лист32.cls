@@ -10,3 +10,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
 Attribute VB_TemplateDerived = False
 Attribute VB_Customizable = True
+Private Sub Worksheet_Activate()
+Call Outro
+End Sub
+
+Private Sub Worksheet_Deactivate()
+Call Outro
+End Sub

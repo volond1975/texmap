@@ -344,9 +344,10 @@ End Sub
 
 
 '==================================================
+'modNamedRanges
 'Function WhereInArray(arr1 As Variant, vFind As Variant) As Variant
 'Sub setJsonToNamedRange(wb As Workbook, name As String, strJson As String)
-'Function getJsonToNamedRange()
+'Function getJsonToNamedRange(wb As Workbook, name As String)
 'Function getHeadersRange(wb As Workbook, name)
 'Function œÓ»ÏÂÌËJSON(ndrName) FIXME
 '==================================================
@@ -398,7 +399,7 @@ Next
 
  End Sub
 
-Function getJsonToNamedRange()
+Function getJsonToNamedRange(wb As Workbook, name As String)
 
 Dim strJson As String
 Dim n As name

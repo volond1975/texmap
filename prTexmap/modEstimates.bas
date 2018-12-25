@@ -220,7 +220,7 @@ End Sub
 Function NameEstimates(TypeOfFelling As String)
 'TypeOfFelling-вид рубки
 prefix = "_кошторис"
-NameEstimates = LeterSheetShablon(v.value) & v.value & prefix
+NameEstimates = LeterSheetShablon(TypeOfFelling) & TypeOfFelling & prefix
 End Function
 Function NamedRangeEstimates(wb As Workbook, TypeOfFelling As String)
 'TypeOfFelling-вид рубки
@@ -274,18 +274,22 @@ Dim wbCompl As Workbook
 Dim TypeOfFelling As String
 Dim strComplFileName As String
 Dim strJson As String
-On Error GoTo ErH
+'On Error GoTo ErH
+call Outro
+Call mMacros.Intro
 Set wbTexmap = ThisWorkbook
 TypeOfFelling = ActiveSheet.name
 strJson = getJsonToNamedRange(wbTexmap, NameEstimates(TypeOfFelling))
+
 strComplFileName = "Комплект.xlsm"
 Set wbCompl = openThisWorkBookPathByName(strComplFileName)
-
-Done:
+Call setJsonToNamedRange(wbCompl, NameEstimates(TypeOfFelling), strJson)
+Call Outro
+'Done:
 End Sub
-ErH:
-    DisplayError Err.Source, Err.Description, "Module1.testopenThisWorkBookPathByName"
-End Sub
+'ErH:
+'    DisplayError Err.Source, Err.description, "Module1.testopenThisWorkBookPathByName"
+'End Sub
 
 Function openThisWorkBookPathByName(strComplFileName As String, Optional wbTexmap As Workbook)
 On Error GoTo EH
@@ -297,8 +301,23 @@ Set wbTexmap = ThisWorkbook
 Set wbCompl = mywbBook(strComplFileName, wbTexmap.Path & "\")
 If wbCompl Is Nothing Then MsgBox ("Файл " & TwbTexmap.Path & "\" & strComplFileName & "не обнаружен по пути")
 Done:
-openThisWorkBookPathByName = wbCompl
+Set openThisWorkBookPathByName = wbCompl
     Exit Function
 EH:
     DisplayError Err.Source, Err.Description, "Module1.openThisWorkBookPathByName"
 End Function
+Sub WorksheetByNameRangeActivate()
+Dim wbTexmap As Workbook
+Dim lou As ListObject
+'On Error GoTo EH
+Call Outro
+Name = "Техкарта"
+Set wbTexmap = ThisWorkbook
+Set loj = New clsmListObjs
+With loj
+.Initialize wbTexmap
+Set lou = loj.items(Name)
+lou.parent.Activate
+End With
+EH:
+End Sub
